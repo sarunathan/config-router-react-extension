@@ -4,16 +4,23 @@ import ReactDOM from "react-dom";
 import { Provider } from 'react-redux'
 
 const settings = {};
+let uniqId;
 
+const generateUniqId = () => {
+    if(!uniqId){
+        uniqId = 0;
+    }
+    return ++uniqId;
+};
 
 /* Monkey patching pubsub to send container in the eventpublisher */
-let publish = PubSubHelper["publish"];
+const publish = PubSubHelper["publish"];
 
-React.Component.prototype["publish"] = function(...args){
-    if(args.length == 2){
-        publish.call(PubSubHelper,this.props.container, ...args)
+React.Component.prototype["publish"] = function (...args) {
+    if (args.length == 2) {
+        publish.call(PubSubHelper, this.props.container, ...args)
     }
-    else{
+    else {
         publish.call(PubSubHelper, ...args)
     }
 };
@@ -23,26 +30,35 @@ React.Component.prototype["subscribe"] = PubSubHelper["subscribe"];
 React.Component.prototype["unsubscribe"] = PubSubHelper["unsubscribe"];
 
 let createInstance = (moduleData)=> {
-    return Promise.resolve(ReactDOM.render(
-            React.createElement( Provider , {store : settings.dataStore}, React.createElement(
-                    moduleData.module,
-                    {
-                        container : moduleData.instanceConfig.container,
-                        placeholder : moduleData.instanceConfig.placeholder
-                    })
 
-            ),
-            document.querySelector(moduleData.instanceConfig.container)
-        )
+    moduleData.id = generateUniqId();
+    document.querySelector(moduleData.instanceConfig.container).setAttribute("data-react-id", moduleData.id);
+    ReactDOM.render(
+        React.createElement(Provider, {store: settings.dataStore}, React.createElement(
+                moduleData.module,
+                {
+                    container: moduleData.instanceConfig.container,
+                    placeholder: moduleData.instanceConfig.placeholder
+                })
+        ),
+        document.querySelector(moduleData.instanceConfig.container)
     );
+
+    return Promise.resolve(moduleData.id);
 };
 
 let destroyInstance = (moduleData)=> {
-    ReactDOM.unmountComponentAtNode(document.querySelector(moduleData.instanceConfig.container));
+
+    let moduleRef = document.querySelector(`[data-react-id='${moduleData.id}']`);
+    if(moduleRef){
+        ReactDOM.unmountComponentAtNode(moduleRef);
+    }else{
+        throw("Module you are trying to destory is not available in dom");
+    }
 };
 
 let init = (o) => {
-    Object.assign(settings,o);
+    Object.assign(settings, o);
 };
 
 export default {
