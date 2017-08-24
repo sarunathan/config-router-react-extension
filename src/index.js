@@ -1,13 +1,13 @@
 import {PubSubHelper} from "blinx";
 import React from "react";
 import ReactDOM from "react-dom";
-import { Provider } from 'react-redux'
+import {Provider} from 'react-redux'
 
 const settings = {};
 let uniqId;
 
 const generateUniqId = () => {
-    if(!uniqId){
+    if (!uniqId) {
         uniqId = 0;
     }
     return ++uniqId;
@@ -29,30 +29,38 @@ React.Component.prototype["publish"] = function (...args) {
 React.Component.prototype["subscribe"] = PubSubHelper["subscribe"];
 React.Component.prototype["unsubscribe"] = PubSubHelper["unsubscribe"];
 
-let createInstance = (moduleData)=> {
+let createInstance = (moduleData) => {
 
     moduleData.id = generateUniqId();
     document.querySelector(moduleData.instanceConfig.container).setAttribute("data-react-id", moduleData.id);
-    ReactDOM.render(
-        React.createElement(Provider, {store: settings.dataStore}, React.createElement(
-                moduleData.module,
-                {
-                    container: moduleData.instanceConfig.container,
-                    placeholder: moduleData.instanceConfig.placeholder
-                })
-        ),
-        document.querySelector(moduleData.instanceConfig.container)
-    );
+
+    let renderModule = React.createElement(
+        moduleData.module,
+        {
+            container: moduleData.instanceConfig.container,
+            placeholder: moduleData.instanceConfig.placeholder
+        });
+
+    if (settings.dataStore) {
+        ReactDOM.render(
+            React.createElement(Provider, {store: settings.dataStore}, renderModule,
+                document.querySelector(moduleData.instanceConfig.container)
+            )
+        );
+    } else {
+        ReactDOM.render(renderModule, document.querySelector(moduleData.instanceConfig.container));
+    }
+
 
     return Promise.resolve(moduleData.id);
 };
 
-let destroyInstance = (moduleData)=> {
+let destroyInstance = (moduleData) => {
 
     let moduleRef = document.querySelector(`[data-react-id='${moduleData.id}']`);
-    if(moduleRef){
+    if (moduleRef) {
         ReactDOM.unmountComponentAtNode(moduleRef);
-    }else{
+    } else {
         throw("Module you are trying to destory is not available in dom");
     }
 };
