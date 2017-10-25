@@ -1,20 +1,19 @@
 {
-  "name": "react-blinx-extension",
+  "name": "config-router-react-extension",
   "version": "1.0.5",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
     "build": "npm run build:commonjs && npm run build:umd && npm run build:umd:min",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
-    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack src/index.js dist/reactBlinxExtension.js",
-    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack src/index.js dist/reactBlinxExtension.min.js"
+    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack src/index.js dist/reactRouterExtension.js",
+    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack src/index.js dist/reactRouterExtension.min.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sarunathan/react-blinx-extension.git"
+    "url": "https://github.com/sarunathan/config-router-react-extension.git"
   },
   "dependencies": {
-    "blinx": "0.9.4",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-redux": "^5.0.5",
@@ -30,6 +29,6 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sarunathan/react-blinx-extension/issues"
+    "url": "https://github.com/sarunathan/config-router-react-extension/issues"
   }
 }

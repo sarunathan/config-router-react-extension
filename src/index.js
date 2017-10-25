@@ -1,4 +1,3 @@
-import {PubSubHelper} from "blinx";
 import React from "react";
 import ReactDOM from "react-dom";
 import {Provider} from 'react-redux'
@@ -13,25 +12,31 @@ const generateUniqId = () => {
     return ++uniqId;
 };
 
-/* Monkey patching pubsub to send container in the eventpublisher */
-const publish = PubSubHelper["publish"];
+/*****
+ * Abstracts the logic of when to render local or global data store provider to
+ * readable text
+ ***/
+let getComponentStatus = (moduleData) => {
 
-React.Component.prototype["publish"] = function (...args) {
-    if (args.length == 2) {
-        publish.call(PubSubHelper, this.props.container, ...args)
-    }
-    else {
-        publish.call(PubSubHelper, ...args)
-    }
-};
-/* Monkey patching pubsub to send container */
+    const status = "RENDER_ONLY_COMPONENT";
 
-React.Component.prototype["subscribe"] = PubSubHelper["subscribe"];
-React.Component.prototype["unsubscribe"] = PubSubHelper["unsubscribe"];
+    if (settings.dataStore && !moduleData.instanceStore) {
+        status = "RENDER_COMPONENT_WITH_GLOBALSTORE";
+    } else if (settings.dataStore && moduleData.instanceStore) {
+        status = "RENDER_COMPONENT_WITH_GLOBALSTORE_AND_LOCALSTORE";
+    } else if (!settings.dataStore && moduleData.instanceStore) {
+        console.warn(" React-config-router extension doesn't support only local store. Please use a global store along with local store , Note: Your local store is ignored");
+        // // render only component
+    } else {
+        // render only component
+    }
+    return status;
+}
 
 let createInstance = (moduleData) => {
 
     moduleData.id = generateUniqId();
+    
     document.querySelector(moduleData.instanceConfig.container).setAttribute("data-react-id", moduleData.id);
 
     let renderModule = React.createElement(
@@ -40,17 +45,24 @@ let createInstance = (moduleData) => {
             container: moduleData.instanceConfig.container,
             placeholder: moduleData.instanceConfig.placeholder
         });
+    
+    let renderGlobalProvider = React.createElement(Provider, {store: settings.dataStore}, renderModule);
 
-    if (settings.dataStore) {
-        ReactDOM.render(
-            React.createElement(Provider, {store: settings.dataStore}, renderModule,
-                document.querySelector(moduleData.instanceConfig.container)
-            )
-        );
-    } else {
-        ReactDOM.render(renderModule, document.querySelector(moduleData.instanceConfig.container));
+    let renderLocalProvider = React.createElement(Provider, {store: settings.dataStore}, renderGlobalProvider);
+    
+    switch(getComponentStatus(moduleData)){
+        case "RENDER_COMPONENT_WITH_GLOBALSTORE":
+            ReactDOM.render( renderGlobalProvider,document.querySelector(moduleData.instanceConfig.container));
+        break;
+        case "RENDER_COMPONENT_WITH_GLOBALSTORE_AND_LOCALSTORE":
+            ReactDOM.render( renderGlobalProvider,document.querySelector(moduleData.instanceConfig.container));
+        break;
+        case "RENDER_ONLY_COMPONENT":
+            ReactDOM.render(renderLocalProvider, document.querySelector(moduleData.instanceConfig.container));        
+        break;
+        default:
+            ReactDOM.render(renderLocalProvider, document.querySelector(moduleData.instanceConfig.container));
     }
-
 
     return Promise.resolve(moduleData.id);
 };
@@ -61,7 +73,7 @@ let destroyInstance = (moduleData) => {
     if (moduleRef) {
         ReactDOM.unmountComponentAtNode(moduleRef);
     } else {
-        throw("Module you are trying to destory is not available in dom");
+        console.error("Module you are trying to destory is not available in dom");
     }
 };
 
