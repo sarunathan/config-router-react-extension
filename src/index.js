@@ -18,7 +18,7 @@ const generateUniqId = () => {
  ***/
 let getComponentStatus = (moduleData) => {
 
-    const status = "RENDER_ONLY_COMPONENT";
+    let status = "RENDER_ONLY_COMPONENT";
 
     if (settings.dataStore && !moduleData.instanceStore) {
         status = "RENDER_COMPONENT_WITH_GLOBALSTORE";
