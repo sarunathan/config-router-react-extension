@@ -55,13 +55,13 @@ let createInstance = (moduleData) => {
             ReactDOM.render( renderGlobalProvider,document.querySelector(moduleData.instanceConfig.container));
         break;
         case "RENDER_COMPONENT_WITH_GLOBALSTORE_AND_LOCALSTORE":
-            ReactDOM.render( renderGlobalProvider,document.querySelector(moduleData.instanceConfig.container));
+            ReactDOM.render( renderLocalProvider,document.querySelector(moduleData.instanceConfig.container));
         break;
         case "RENDER_ONLY_COMPONENT":
-            ReactDOM.render(renderLocalProvider, document.querySelector(moduleData.instanceConfig.container));        
+            ReactDOM.render(renderModule, document.querySelector(moduleData.instanceConfig.container));        
         break;
         default:
-            ReactDOM.render(renderLocalProvider, document.querySelector(moduleData.instanceConfig.container));
+            ReactDOM.render(renderModule, document.querySelector(moduleData.instanceConfig.container));
     }
 
     return Promise.resolve(moduleData.id);
