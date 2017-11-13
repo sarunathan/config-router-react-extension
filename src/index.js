@@ -1,6 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Provider} from 'react-redux';
+import {Provider,createProvider} from 'react-redux';
+
+
+let GlobalProvider = createProvider("global");
 
 const settings = {};
 let uniqId;
@@ -46,9 +49,9 @@ let createInstance = (moduleData) => {
             placeholder: moduleData.instanceConfig.placeholder
         });
     
-    let renderGlobalProvider = React.createElement(Provider, {store: settings.dataStore}, renderModule);
+    let renderGlobalProvider = React.createElement(GlobalProvider, {store: settings.dataStore}, renderModule);
 
-    let renderLocalProvider = React.createElement(Provider, {store: settings.dataStore}, renderGlobalProvider);
+    let renderLocalProvider = React.createElement(Provider, {store: moduleData.instanceStore}, renderGlobalProvider);
     
     switch(getComponentStatus(moduleData)){
         case "RENDER_COMPONENT_WITH_GLOBALSTORE":
