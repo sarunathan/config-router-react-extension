@@ -14,8 +14,8 @@
     "url": "https://github.com/sarunathan/config-router-react-extension.git"
   },
   "dependencies": {
-    "react": "16.0.2",
-    "react-dom": "16.0.2",
+    "react": "16.2.0",
+    "react-dom": "16.2.0",
     "react-redux": "^5.0.5",
     "redux": "^3.7.2"
   },
