@@ -1,6 +1,6 @@
 {
   "name": "config-router-react-extension",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -14,8 +14,8 @@
     "url": "https://github.com/sarunathan/config-router-react-extension.git"
   },
   "dependencies": {
-    "react": "^15.4.1",
-    "react-dom": "^15.4.1",
+    "react": "16.0.2",
+    "react-dom": "16.0.2",
     "react-redux": "^5.0.5",
     "redux": "^3.7.2"
   },
